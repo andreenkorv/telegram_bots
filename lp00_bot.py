@@ -25,7 +25,7 @@ logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
 
 
 def main():
-    lp00_bot = Updater("1008440417:AAFPWHZXGgQ5zeFOkSwdCll0z8LF_xemDcU", request_kwargs=PROXY)
+    lp00_bot = Updater("TOKEN", request_kwargs=PROXY)
     dp = lp00_bot.dispatcher
     dp.add_handler(CommandHandler("start", greet_user))
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
