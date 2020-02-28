@@ -5,6 +5,17 @@ from datetime import datetime
 PROXY = {'proxy_url': 'socks5://t1.learn.python.ru:1080',
     'urllib3_proxy_kwargs': {'username': 'learn', 'password': 'python'}}
 
+city_list = [
+    "Москва", "Архангельск", "Норильск", "Канск", "Кисловодск", "Арзамас"
+            ]
+
+def cities_game(bot, update):
+    city = city_list
+    user_city = update.message.text.split()[1]
+    try:
+        city.remove(user_city)
+    except ValueError:
+        
 
 def greet_user(bot, update):
     print('Вызван /start')
@@ -49,7 +60,7 @@ def next_full_moon(bot, update):  # Когда следующее полнолу
     try:
         answer = ephem.next_full_moon(user_text[0])
     except ValueError:
-        answer = "введите дату в формате: year/month/day; year-month-day; или hours:minutes:seconds"
+        answer = "введите дату в формате: year/month/day; year-month-day"
     # else:
         # answer = "Введите дату"
     update.message.reply_text(answer)
