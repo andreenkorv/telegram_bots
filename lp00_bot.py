@@ -13,33 +13,46 @@ def greet_user(bot, update):
     update.message.reply_text(text)
 
 
-def planet_in_stellaris(bot, update):
-    user_text = (update.message.text).split()
-    user_planet = user_text[1].title()
+def planet(bot, update):
+    planet_name = update.message.text.split()[1]
     cur_date = '{:%Y/%m/%d}'.format(datetime.now())
-    print(user_planet)
-    if user_planet.lower() == 'mars':
-        update.message.reply_text(ephem.constellation(ephem.Mars(cur_date)))
-    elif user_planet.lower() == 'venus':
-        update.message.reply_text(ephem.constellation(ephem.Venus(cur_date)))
-    elif user_planet.lower() == 'saturn':
-        update.message.reply_text(ephem.constellation(ephem.Saturn(cur_date)))
-    elif user_planet.lower() == 'mercury':
-        update.message.reply_text(ephem.constellation(ephem.Mercury(cur_date)))
-    elif user_planet.lower() == 'uranus':
-        update.message.reply_text(ephem.constellation(ephem.Uranus(cur_date)))
-    elif user_planet.lower() == 'jupiter':
-        update.message.reply_text(ephem.constellation(ephem.Jupiter(cur_date)))
-    elif user_planet.lower() == 'neptune':
-        update.message.reply_text(ephem.constellation(ephem.Nupiter(cur_date)))
-    else:
-        update.message.reply_text(f'Планеты: {user_planet} нету')
+    print(planet_name)
+
+    planet_name_for_ephem = getattr(ephem, planet_name)(cur_date)
+    planet_name_for_ephem.compute()
+    constellation_of_the_planet = ephem.constellation(planet_name_for_ephem)
+
+    reply = f'Планета {planet_name} находится в созвездии {constellation_of_the_planet[1]}'
+    return update.message.reply_text(reply)
 
 
 def talk_to_me(bot, update):
-    user_text = update.message.text
+    user_text = update.message.text.split()
     print(user_text)
-    update.message.reply_text(user_text)
+    update.message.reply_text(user_text[:])
+
+
+def wordcount(bot, update):  # Считает количество слов
+    user_text = update.message.text.split()[1:]
+    print(user_text)
+    if user_text:
+        answer = len(user_text)
+    else:
+        answer = "Введите текст"
+    update.message.reply_text(answer)
+
+
+def next_full_moon(bot, update):  # Когда следующее полнолуние
+    user_text = update.message.text.split()[1:]
+    print(user_text)
+    # if user_text:
+    try:
+        answer = ephem.next_full_moon(user_text[0])
+    except ValueError:
+        answer = "введите дату в формате: year/month/day; year-month-day; или hours:minutes:seconds"
+    # else:
+        # answer = "Введите дату"
+    update.message.reply_text(answer)
 
 
 logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
@@ -64,8 +77,10 @@ def main():
                     )
     dp = lp00_bot.dispatcher
     dp.add_handler(CommandHandler("start", greet_user))
-    dp.add_handler(CommandHandler("planet", planet_in_stellaris))
+    dp.add_handler(CommandHandler("planet", planet))
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
+    dp.add_handler(CommandHandler("wordcount", wordcount))
+    dp.add_handler(CommandHandler("next_full_moon", next_full_moon))
     lp00_bot.start_polling()
     lp00_bot.idle()
 
